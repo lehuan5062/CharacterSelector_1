@@ -5,6 +5,7 @@
 
 // core
 #include "Math/Vector.h" // FVector
+#include "Templates/UnrealTemplate.h" // MoveTemp
 
 // CoreUObject
 #include "UObject/Object.h" // CreateDefaultSubobject
@@ -57,31 +58,23 @@ const FCharacterSelectorStruct_1 ACharacterSelectorActor_1::GetCharacterData(con
 void ACharacterSelectorActor_1::ChangeCharacter(const CharacterIndex_t index = 0) noexcept
 {
 	// class nhân vật sẽ dùng tới nhiều, cần lưu vào biến nội bộ
-	const TSubclassOf<CharacterClass_t>&& SelectedCharacterClass{ GetCharacterData(index).ChooseACharacterClass };
+	const TSubclassOf<CharacterClass_t>&& CharacterClass{ GetCharacterData(index).ChooseACharacterClass };
 
-	// nếu SelectedCharacterClass chưa được chọn từ editor hoặc giống class nhân vật hiện tại thì không cần đổi
-	if (SelectedCharacterClass->IsValidLowLevel() && SelectedCharacterClass != CharacterToSpawn->GetChildActorClass())
+	// nếu CharacterClass chưa được chọn từ editor hoặc giống class nhân vật hiện tại thì không cần đổi
+	if (CharacterClass->IsValidLowLevel() && CharacterClass != CharacterToSpawn->GetChildActorClass())
 	{
 		// đổi sang class được chọn
-		CharacterToSpawn->SetChildActorClass(SelectedCharacterClass);
+		CharacterToSpawn->SetChildActorClass(CharacterClass);
 
 		// thử lấy child actor ở dạng CharacterClass_t (ACharacter)
-		const TObjectPtr<CharacterClass_t>& SelectedCharacter{ Cast<CharacterClass_t>(CharacterToSpawn->GetChildActor()) };
+		const TObjectPtr<CharacterClass_t>& CharacterActor{ Cast<CharacterClass_t>(CharacterToSpawn->GetChildActor()) };
 
 		// nếu ChildActor là một CharacterClass_t
-		if (SelectedCharacter->IsValidLowLevel())
+		if (CharacterActor->IsValidLowLevel())
 		{
 			// dời nhân vật lên một nửa cái capsule
-			CharacterToSpawn->SetRelativeLocation(FVector
-				{ 0, 0, SelectedCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() });
-
-			// nếu ChildActor có Mesh
-			const TObjectPtr<USkeletalMeshComponent> MeshToDestroy{ SelectedCharacter->GetMesh() };
-			if (MeshToDestroy->IsValidLowLevel())
-			{
-				// xóa mesh cũ của CharacterClass_t (ACharacter)
-				MeshToDestroy->DestroyComponent();
-			}
+			CharacterToSpawn->SetRelativeLocation
+			(FVector{ 0, 0, CharacterActor->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() });
 		}
 	}
 }
@@ -104,8 +97,10 @@ void ACharacterSelectorActor_1::BeginPlay()
 	if (SelectorWidgetClass->IsValidLowLevel())
 	{
 		// tạo biến chứa UCharacterSelectorWidget_1
-		const TObjectPtr<UCharacterSelectorWidget_1> SelectorWidget{
-			CreateWidget<UCharacterSelectorWidget_1>(GetWorld(), SelectorWidgetClass) };
+		const TObjectPtr<UCharacterSelectorWidget_1> SelectorWidget
+		{
+			CreateWidget<UCharacterSelectorWidget_1>(GetWorld(), MoveTemp(SelectorWidgetClass))
+		};
 
 		// gửi self reference đến UCharacterSelectorWidget_1 để gửi đến nút
 		UCharacterSelectorWidget_1::SelectorActor = this;

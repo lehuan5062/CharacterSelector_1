@@ -21,8 +21,10 @@ void UCharacterSelectorWidget_1::NativeConstruct()
 		for (FCharacterSelectorStruct_1 ButtonData : SelectorActor->ListOfCharacters)
 		{
 			// tạo biến chứa UCharacterSelectorWidget_1
-			const TObjectPtr<UCharacterSelectorButton_1> SelectorButton{
-				CreateWidget<UCharacterSelectorButton_1>(GetWorld(), SelectorButtonClass) };
+			const TObjectPtr<UCharacterSelectorButton_1> SelectorButton
+			{
+				CreateWidget<UCharacterSelectorButton_1>(GetWorld(), SelectorButtonClass)
+			};
 
 			// gán index nhân vật trong danh sách cho nút
 			SelectorButton->CharacterIndex = index;

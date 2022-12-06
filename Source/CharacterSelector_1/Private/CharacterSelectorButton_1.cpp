@@ -4,7 +4,7 @@
 #include "CharacterSelectorInstance_1.h" // UCharacterSelectorInstance_1
 
 // core
-#include "UObject/NameTypes.h" // FName
+#include "Templates/UnrealTemplate.h" // MoveTemp
 
 // CoreUObject
 #include "UObject/ObjectPtr.h" // TObjectPtr
@@ -33,7 +33,7 @@ void UCharacterSelectorButton_1::SelectCharacter() noexcept
 		if (CharacterSelectorInstance->IsValidLowLevel())
 		{
 			// lưu class nhân vật được chọn vào UCharacterSelectorInstance_1
-			CharacterSelectorInstance->SelectedCharacterClass = CharacterData.ChooseACharacterClass;
+			CharacterSelectorInstance->SelectedCharacterClass = MoveTemp(CharacterData.ChooseACharacterClass);
 		}
 
 		// kiểm tra LevelToOpen (TSoftObjectPtr) không bao giờ null
@@ -41,7 +41,7 @@ void UCharacterSelectorButton_1::SelectCharacter() noexcept
 		if (!UCharacterSelectorWidget_1::SelectorActor->LevelToOpen.IsNull())
 		{
 			// mở level được chọn sau khi chọn nhân vật
-			UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), UCharacterSelectorWidget_1::SelectorActor->LevelToOpen);
+			UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), MoveTemp(UCharacterSelectorWidget_1::SelectorActor->LevelToOpen));
 		}
 	}
 }
@@ -55,7 +55,7 @@ void UCharacterSelectorButton_1::NativeConstruct()
 	CharacterData = UCharacterSelectorWidget_1::SelectorActor->GetCharacterData(CharacterIndex);
 
 	// đổi tên nút theo struct dữ liệu nhân vật
-	text->SetText(CharacterData.ButtonName);
+	text->SetText(MoveTemp(CharacterData.ButtonName));
 
 	// gọi ChangeCharacter khi rê chuột vào nút
 	button->OnHovered.AddDynamic(this, &UCharacterSelectorButton_1::ChangeCharacter);

@@ -55,6 +55,7 @@ public:
 	// set trong editor
 	UPROPERTY(EditAnywhere, Category = CharacterSelector)
 		// level để mở sau khi nhấn nút
+		// sẽ move sang CharacterSelectorButton_1 khi bấm chọn nhân vật
 		TSoftObjectPtr<UWorld> LevelToOpen;
 
 	// constructor
